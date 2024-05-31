@@ -69,19 +69,40 @@ def string_to_bits(str):
 
 generateGraph('AB')
 
-def pressEnter(event):
-    input_text = entry.get()
-    binary_result = string_to_bits(input_text)
-    result_label.config(text=f"Mensagem escrita: {input_text}\nMensagem em Binário: {binary_result}")
-    generateGraph(input_text)
+#Caeser Cipher
+def encrypt(str_inserted):
+    message = str_inserted
+    key = 1
+    characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    encrypted_value = ''
+    message = message.upper()
+    for character in message:
+        if character in characters:
+            num = characters.find(character)
+            num = num + key
+            if num >= len(characters):
+                num = num - len(characters)
+            elif num < 0:
+                num = num + len(characters)
+            encrypted_value = encrypted_value + characters[num]
+        else:
+            encrypted_value = encrypted_value + character
+    return encrypted_value
+    
 
+def enterPressed(event):
+    str_inserted = entry.get()
+    encrypted_value = encrypt(str_inserted)
+    binary_value = string_to_bits(encrypted_value)
+    result_label.config(text=f"Mensagem escrita: {str_inserted}\nMensagem encriptada: {encrypted_value}\nMensagem em binário: {binary_value}")
+    #generateGraph(str_inserted)
 
 window = tk.Tk()
 entry_label = ttk.Label(window, text = "Digite a mensagem: ")
-entry_label.pack(pady=5)
+entry_label.pack()
 entry = ttk.Entry(window, width=40)
-entry.pack(pady=5)
-entry.bind('<Return>', pressEnter)
+entry.pack()
+entry.bind('<Return>', enterPressed)
 result_label = ttk.Label(window, text="")
-result_label.pack(pady=5)
+result_label.pack(pady=10)
 window.mainloop()
