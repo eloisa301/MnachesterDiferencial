@@ -1,4 +1,6 @@
 import plotly.graph_objects as go
+import tkinter as tk
+from tkinter import ttk
 
 def generateGraph(str_inserted):
     bits = string_to_bits(str_inserted)
@@ -66,3 +68,20 @@ def string_to_bits(str):
     return string_in_bits
 
 generateGraph('AB')
+
+def pressEnter(event):
+    input_text = entry.get()
+    binary_result = string_to_bits(input_text)
+    result_label.config(text=f"Mensagem escrita: {input_text}\nMensagem em Binário: {binary_result}")
+    generateGraph(input_text)
+
+
+window = tk.Tk()
+entry_label = ttk.Label(window, text = "Digite a mensagem: ")
+entry_label.pack(pady=5)
+entry = ttk.Entry(window, width=40)
+entry.pack(pady=5)
+entry.bind('<Return>', pressEnter)
+result_label = ttk.Label(window, text="")
+result_label.pack(pady=5)
+window.mainloop()
