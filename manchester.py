@@ -1,9 +1,9 @@
 import plotly.graph_objects as go
 import tkinter as tk
+import socket
 from tkinter import ttk
 
-def generateGraph(str_inserted):
-    bits = string_to_bits(str_inserted)
+def generateGraph(bits):
     encoded_signal = differential_manchester_encoding(bits)
 
     x = list(range(len(encoded_signal)))
@@ -31,29 +31,27 @@ def generateGraph(str_inserted):
 
 def differential_manchester_encoding(bits):
     encoded_signal = []
-    current_level = 1
+    current_level = '1'
 
     for bit in bits:
         if bit == '1':
             if current_level == '0':
-                encoded_signal.append(current_level)
+                encoded_signal.append(0)
+                encoded_signal.append(1)
                 current_level = '1'
-                encoded_signal.append(current_level)
             else:
-                encoded_signal.append(current_level)
+                encoded_signal.append(1)
+                encoded_signal.append(0)   
                 current_level = '0'
-                encoded_signal.append(current_level)   
         elif bit == '0':
-            if current_level == '1':
+            if current_level == '0':
+                encoded_signal.append(1)
+                encoded_signal.append(0)
                 current_level = '0'
-                encoded_signal.append(current_level)
-                current_level = '1'
-                encoded_signal.append(current_level)
             else:
+                encoded_signal.append(0)
+                encoded_signal.append(1)
                 current_level = '1'
-                encoded_signal.append(current_level)
-                current_level = '0'
-                encoded_signal.append(current_level)
     
     return encoded_signal
 
@@ -66,8 +64,6 @@ def string_to_bits(str):
         for bit in binary_value:
             string_in_bits.append(bit)
     return string_in_bits
-
-generateGraph('AB')
 
 #Caeser Cipher
 def encrypt(str_inserted):
@@ -88,14 +84,26 @@ def encrypt(str_inserted):
         else:
             encrypted_value = encrypted_value + character
     return encrypted_value
-    
 
 def enterPressed(event):
     str_inserted = entry.get()
     encrypted_value = encrypt(str_inserted)
     binary_value = string_to_bits(encrypted_value)
     result_label.config(text=f"Mensagem escrita: {str_inserted}\nMensagem encriptada: {encrypted_value}\nMensagem em binário: {binary_value}")
-    #generateGraph(str_inserted)
+    generateGraph(binary_value)
+    sendMessage(binary_value, '10.181.5.79')
+
+def sendMessage(message, host, port=1234):
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket.connect((host, port))
+
+    try:
+        binary_string = ''.join(message)  # Converte a lista de bits em uma string
+        message_bytes = binary_string.encode('utf-8')  # Converte a string em bytes
+        client_socket.sendall(message_bytes)
+        print(f'Mensagem enviada: {message_bytes}')
+    finally:
+        client_socket.close()
 
 window = tk.Tk()
 entry_label = ttk.Label(window, text = "Digite a mensagem: ")
