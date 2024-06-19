@@ -1,7 +1,7 @@
 import plotly.graph_objects as go
+from tkinter import ttk
 import tkinter as tk
 import socket
-from tkinter import ttk
 
 def generateGraph(bits):
     encoded_signal = differential_manchester_encoding(bits)
@@ -36,21 +36,21 @@ def differential_manchester_encoding(bits):
     for bit in bits:
         if bit == '1':
             if current_level == '0':
-                encoded_signal.append(0)
-                encoded_signal.append(1)
+                encoded_signal.append('0')
+                encoded_signal.append('1')
                 current_level = '1'
             else:
-                encoded_signal.append(1)
-                encoded_signal.append(0)   
+                encoded_signal.append('1')
+                encoded_signal.append('0')   
                 current_level = '0'
         elif bit == '0':
             if current_level == '0':
-                encoded_signal.append(1)
-                encoded_signal.append(0)
+                encoded_signal.append('1')
+                encoded_signal.append('0')
                 current_level = '0'
             else:
-                encoded_signal.append(0)
-                encoded_signal.append(1)
+                encoded_signal.append('0')
+                encoded_signal.append('1')
                 current_level = '1'
     
     return encoded_signal
@@ -91,7 +91,7 @@ def enterPressed(event):
     binary_value = string_to_bits(encrypted_value)
     result_label.config(text=f"Mensagem escrita: {str_inserted}\nMensagem encriptada: {encrypted_value}\nMensagem em binário: {binary_value}")
     generateGraph(binary_value)
-    sendMessage(binary_value, '10.181.5.79')
+    sendMessage(differential_manchester_encoding(binary_value), 'localhost')
 
 def sendMessage(message, host, port=1234):
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
